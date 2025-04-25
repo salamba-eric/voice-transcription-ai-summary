@@ -1,41 +1,64 @@
 
-Documentation system for medical application. Current primary focus is on propper voice transcription
-    Step 1 - Audio Input ~ How we take and segment audio input
-    Step 2 - Audio Preprocessing ~ Amplification and Denoising the audio
-    Step 3 - Transcription ~ Take the audio and transcribe whatever is said
-    Step 3.5 - Speech dirization ~ Classify who says what when using the data from the transcription module
-    -------------------------------------------------------------------------------------------------------
-        This is where non classified OCR input comes in
-    -------------------------------------------------------------------------------------------------------
-    Step 4 - Text Classification ~ Using dirization, and other classifications, Group contextualized text
-    step 5 - Context Classification ~ Take the contextualized sentences and group by meanings
-    step 6 - Entity extraction ~ Extract the eintities from the contextualized sentences
-    -------------------------------------------------------------------------------------------------------
-        This is where classified OCR input comes in
-    -------------------------------------------------------------------------------------------------------
-    step 7 - Data Processing ~ Place the extracted data where needed
+# Medical Application Documentation System  
+*Focused on Robust Voice Transcription Pipeline*
 
-Requirements
-languages
-    [python, js]
+---
 
-python modules
-    subprocess - OS calls
-    ffmpeg - audio modification
-    torch - machine learning models
-    torchaudio - audio processing MLs
-    denoiser - denoising ML model
-    pyannote - audio segmentation library
-    faster_whisper - speech to text ML model
-    speechbrain - specifically for the dirization model loading
-    spacy - NLP model loading
-    datasets - training data storage methods
-    sklearn - classification algorithms
-    transformers - classification methods
-    numpy - math and matrix manipulation methods, for Model training
-    evaluate - model evaluation
+## Process Overview  
 
-pretrained models
+### 🎤 Audio Processing Pipeline
+1. **Step 1 - Audio Input**  
+   _How we take and segment audio input_
+
+2. **Step 2 - Audio Preprocessing**  
+   _Amplification and denoising the audio_
+
+3. **Step 3 - Transcription**  
+   _Convert audio to text using speech recognition_
+
+4. **Step 3.5 - Speaker Diarization**  
+   _Classify speakers and timestamp their utterances_
+
+---
+
+### 📄 OCR Integration Points
+```plaintext
+------------------------------------------
+Non-classified OCR input enters here
+------------------------------------------
+
+------------------------------------------
+Classified OCR input enters here
+------------------------------------------
+
+# Core Processing
+subprocess  # OS calls
+ffmpeg      # Audio modification
+
+# Machine Learning
+torch
+torchaudio
+denoiser
+pyannote.audio
+faster_whisper
+speechbrain
+
+# NLP Processing
+spacy
+datasets
+sklearn
+transformers
+
+# Utilities
+numpy
+evaluate
+
+🧠 Pretrained Models
+Pretrained models:
+https://drive.google.com/drive/folders/1JPqmJOLDqAob1TiI3wN7B6YOVN_9-NXo?usp=drive_link
+
+Custom Trained Models:
+https://drive.google.com/drive/folders/1BP2W85IG9WiNkp2eSlhge30g5asz91xF?usp=drive_link
 
 
 

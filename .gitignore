@@ -1,4 +1,5 @@
 /test_audio
 /pretrained_models
-/output_transcription
+/output_transcriptions
 /.qodo
+/self_trained_models

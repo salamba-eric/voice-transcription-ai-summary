@@ -6,8 +6,8 @@ function PatientCard({ patient }) {
 
   return (
     <li className='patient-card'>
-      <button onClick={() => navigate(`/patient/${patient.id}`)}>{patient.name}</button>
-      <button onClick={() => navigate(`/edit-patient/${patient.id}`)}>Edit</button>
+      <button style = {{marginTop: '0px'}} onClick={() => navigate(`/patient/${patient.id}`)}>{patient.name}</button>
+      <button style = {{marginTop: '0px'}} onClick={() => navigate(`/edit-patient/${patient.id}`)}>Edit</button>
     </li>
   );
 }

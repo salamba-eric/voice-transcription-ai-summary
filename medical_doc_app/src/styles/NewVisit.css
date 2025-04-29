@@ -1,0 +1,81 @@
+.new-visit-container {
+    position: relative;
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+    padding-bottom: 100px; /* leave space for buttons */
+  }
+  
+  h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  .form-scrollable {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  
+  .input-box {
+    margin-bottom: 1.5rem;
+  }
+  
+  .input-box label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-transform: capitalize;
+  }
+  
+  .input-box textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    resize: vertical;
+  }
+  
+  /* Floating Button Container */
+  .floating-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1.5rem;
+    z-index: 10;
+  }
+  
+  /* Audio Button */
+  .record-btn,
+  .image-btn {
+    padding: 1rem 1.5rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    transition: background 0.3s;
+  }
+  
+  .record-btn {
+    background-color: #00c896;
+    color: white;
+  }
+  
+  .record-btn.recording {
+    background-color: #ff4d4d;
+  }
+  
+  .image-btn {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .record-btn:hover,
+  .image-btn:hover {
+    opacity: 0.9;
+  }
+  

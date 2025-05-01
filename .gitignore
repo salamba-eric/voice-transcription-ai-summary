@@ -3,3 +3,5 @@
 /output_transcriptions
 /.qodo
 /self_trained_models
+/.trial_venv
+.gitignore

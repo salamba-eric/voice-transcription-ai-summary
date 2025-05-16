@@ -12,4 +12,5 @@ denoiser==0.1.5
 faster_whisper==1.1.1
 happytransformer==3.0.0
 sci-kit-learn==1.5.2
+django-cors-headers==4.7.0
 

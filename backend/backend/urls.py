@@ -21,9 +21,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('document_processing/', include('document_processing.urls')),
-    path('patients/', include('patients.urls')),
-    path('audio_processing/', include('audio_processing.urls')),
+    path('api/patients/', include('patients.urls')), 
+
+    # path('document_processing/', include('document_processing.urls')),
+    # path('patients/', include('patients.urls')),
+    # path('audio_processing/', include('audio_processing.urls')),
     # path('employees/', include('employees.urls')),
     # path('departments/', include('departments.urls')),
     # path('medical_records/', include('medical_records.urls')),

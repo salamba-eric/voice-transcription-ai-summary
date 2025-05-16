@@ -1,10 +1,9 @@
-/test_audio
+backend/*/__pycache__/*.py[cod]
 backend/pretrained_models
-/output_transcriptions
-/.qodo
+backend/media
+backend/test_audio
+backend/output_transcriptions
 backend/self_trained_models
+
+/.qodo
 /.trial_venv
-
-/backend/*/__pycache__/*.py[cod]
-
-

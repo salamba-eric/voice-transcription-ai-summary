@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { create_patient } from '../api/patients';
 import "../styles/NewPatientForm.css";
 
 function NewPatientFormPage() {
@@ -8,7 +9,7 @@ function NewPatientFormPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
-    dob: '',
+    date_of_birth: '',
     gender: '',
     phone: '',
     department: '',
@@ -23,9 +24,9 @@ function NewPatientFormPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Here you would send the formData to Django backend
+    await create_patient(formData);
     console.log('Submitting form:', formData);
   };
 
@@ -61,8 +62,8 @@ function NewPatientFormPage() {
           Date of Birth
           <input
             type="date"
-            name="dob"
-            value={formData.dob}
+            name="date_of_birth"
+            value={formData.date_of_birth}
             onChange={handleChange}
             required
           />

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import ProfileMenu from '../components/ProfileMenu';
-import {get_staff_data} from '../api/patient_data';
+import {get_staff_data} from '../api/staff_data';
 import StaffCard from '../components/StaffCard';
 import "../styles/Home.css"
 

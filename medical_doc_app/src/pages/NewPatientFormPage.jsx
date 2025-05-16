@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import "../styles/NewPatientForm.css";
 
 function NewPatientFormPage() {
+  const staffId = window.location.href.split('/')[4];
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -37,7 +38,7 @@ function NewPatientFormPage() {
       department: '',
       file: null,
     });
-    navigate('/patients/'); // Redirect to the patient records page
+    navigate(`/patients/${staffId}`); // Redirect to the patient records page
   };
 
   return (

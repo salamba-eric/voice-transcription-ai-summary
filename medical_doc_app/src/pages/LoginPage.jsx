@@ -14,6 +14,7 @@ function LoginPage() {
   const handleLogin = async () => {
     try {
       // const response = await api.post('login/', { username, password });
+      
       // console.log('Logged in:', response.data);
       navigate('/home');
     } catch (error) {

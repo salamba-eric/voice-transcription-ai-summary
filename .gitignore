@@ -1,8 +1,8 @@
 /test_audio
-/pretrained_models
+backend/pretrained_models
 /output_transcriptions
 /.qodo
-/self_trained_models
+backend/self_trained_models
 /.trial_venv
 
 /backend/*/__pycache__/*.py[cod]

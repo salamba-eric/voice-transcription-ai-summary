@@ -1,3 +1,6 @@
+from django.conf import settings
+
+
 class LibraryLoadError(Exception):
     """Custom exception raised when library loading fails."""
     pass
@@ -21,87 +24,108 @@ diarization_classifier = None
 grammar_model = None
 grammar_settings = None
 
-try:
-    print("Loading libraries...")
-    import torchaudio
+def load_donoising():
+    """Load the denoising model."""
     from denoiser import pretrained
-    from faster_whisper import WhisperModel
-    from sklearn.cluster import AgglomerativeClustering
-    from speechbrain.inference.speaker import EncoderClassifier
-    from happytransformer import HappyTextToText, TTSettings
-    libraries_loaded = True
-    print("Libraries loaded successfully.\n---------------------------------------------------------------------\n")
-
-    print("Loading pre-trained models...\n")
+    global denoising_model
     try:
+        print("Loading denoising model...")
         denoising_model = pretrained.dns64()
-        print("---Denoising model loaded...")
+        print("Denoising model loaded successfully.")
     except Exception as e:
         raise AudioProcessingError(f"Failed to load denoising model: \n---------------\n{e}\n----------------")
 
+def load_whisper():
+    """Load the Whisper transcription model."""
+    from faster_whisper import WhisperModel
+    global transcription_model
     try:
+        print("Loading Whisper transcription model...")
         transcription_model = WhisperModel("tiny")
-        print("---Transcription model loaded...")
+        print("Whisper transcription model loaded successfully.")
     except Exception as e:
-        raise TranscriptionError(f"Failed to load transcription model: \n---------------\n{e}\n----------------")
+        raise TranscriptionError(f"Failed to load Whisper transcription model: \n---------------\n{e}\n----------------")    
 
+def load_diarization():
+    """Load the diarization classifier."""
+    from speechbrain.inference import EncoderClassifier
+    global diarization_classifier
     try:
+        print("Loading diarization classifier...")
         diarization_classifier = EncoderClassifier.from_hparams(
             source="pretrained_models/spkrec-xvect-voxceleb",
-            savedir="pretrained_models/spkrec-xvect-voxceleb"
+            run_opts={"device": "cpu"} # Change to "cuda" if using GPU
         )
-        print("---Diarization classifier loaded...")
+        print("Diarization classifier loaded successfully.")
     except Exception as e:
-        print(f"Failed to load diarization classifier: \n---------------\n{e}\n----------------")
-        diarization_classifier = None # Set to None so functions using it can handle the absence
+        raise AudioProcessingError(f"Failed to load diarization classifier: \n---------------\n{e}\n----------------")
 
+def load_grammar():
+    """Load the grammar correction model."""
+    from happytransformer import HappyTextToText, TTSettings
+    global grammar_model, grammar_settings
     try:
+        print("Loading grammar correction model...")
         grammar_model = HappyTextToText("T5", "vennify/t5-base-grammar-correction")
         grammar_settings = TTSettings(num_beams=5, min_length=1)
-        print("---Grammar correction model loaded...")
+        print("Grammar correction model loaded successfully.")
     except Exception as e:
-        print(f"Failed to load grammar correction model:\n---------------\n{e}\n----------------")
-        grammar_model = None # Set to None so functions using it can handle the absence
+        raise GrammarCorrectionError(f"Failed to load grammar correction model: \n---------------\n{e}\n----------------")
+  
+
+if settings.LOAD_SPEECH_MODELS_ON_STARTUP:
+    try:
+        print("Loading libraries...")
+        import torchaudio
+        libraries_loaded = True
+        print("Libraries loaded successfully.\n---------------------------------------------------------------------\n")
+
+        print("Loading pre-trained models...\n")
+        
+
+        load_donoising()
+        load_whisper()
+        load_diarization()
+        load_grammar()
+
+        if grammar_model and diarization_classifier and transcription_model and denoising_model:
+            print("Pre-trained models loaded successfully.\n---------------------------------------------------------------------\n")
+        else:
+            print("Some models failed to load. Please check the logs above for details.")
+
+    except ImportError as e:
+        print(f"Error loading libraries: {e}")
+        print("Some libraries are not installed. Please install them using the following command:")
+        print("pip install torchaudio denoiser faster-whisper sklearn speechbrain happytransformer")
+        raise LibraryLoadError("Failed to load one or more required libraries.")
+
+    except LibraryLoadError as e:
+        print(f"Critical error: {e}")
+        # Handle the critical error of missing libraries - perhaps exit the script
+        exit(1)
+
+    except AudioProcessingError as e:
+        print(f"Error during audio processing setup: {e}")
+        # Handle specific audio processing setup errors
+        denoising_model = None # Ensure the model is not used if loading failed
+
+    except TranscriptionError as e:
+        print(f"Error during transcription setup: {e}")
+        # Handle specific transcription setup errors
+        transcription_model = None # Ensure the model is not used if loading failed
+
+    except Exception as e:
+        print(f"An unexpected error occurred during initialization: {e}")
+        # Handle any other unexpected errors during the initial setup
+        denoising_model = None
+        transcription_model = None
+        diarization_classifier = None
+        grammar_model = None
         grammar_settings = None
-
-    if grammar_model and diarization_classifier and transcription_model and denoising_model:
-        print("Pre-trained models loaded successfully.\n---------------------------------------------------------------------\n")
-    else:
-        print("Some models failed to load. Please check the logs above for details.")
-
-except ImportError as e:
-    print(f"Error loading libraries: {e}")
-    print("Some libraries are not installed. Please install them using the following command:")
-    print("pip install torchaudio denoiser faster-whisper sklearn speechbrain happytransformer")
-    raise LibraryLoadError("Failed to load one or more required libraries.")
-
-except LibraryLoadError as e:
-    print(f"Critical error: {e}")
-    # Handle the critical error of missing libraries - perhaps exit the script
-    exit(1)
-
-except AudioProcessingError as e:
-    print(f"Error during audio processing setup: {e}")
-    # Handle specific audio processing setup errors
-    denoising_model = None # Ensure the model is not used if loading failed
-
-except TranscriptionError as e:
-    print(f"Error during transcription setup: {e}")
-    # Handle specific transcription setup errors
-    transcription_model = None # Ensure the model is not used if loading failed
-
-except Exception as e:
-    print(f"An unexpected error occurred during initialization: {e}")
-    # Handle any other unexpected errors during the initial setup
-    denoising_model = None
-    transcription_model = None
-    diarization_classifier = None
-    grammar_model = None
-    grammar_settings = None
 
 def clean_audio(audio_path):
     if not denoising_model:
-        raise AudioProcessingError("Denoising model is not loaded.")
+        load_donoising()
     try:
         print(f"Cleaning audio: {audio_path}")
         wav, sr = torchaudio.load(audio_path)
@@ -114,7 +138,7 @@ def clean_audio(audio_path):
 
 def transcribe_audio(audio_path):
     if not transcription_model:
-        raise TranscriptionError("Transcription model is not loaded.")
+        load_whisper()
     try:
         print(f"Transcribing audio: {audio_path}")
         cleaned_path = clean_audio(audio_path)
@@ -129,7 +153,7 @@ def transcribe_audio(audio_path):
 
 def correct_grammar(text):
     if not grammar_model or not grammar_settings:
-        raise GrammarCorrectionError("Grammar correction model is not loaded.")
+        load_grammar()
     try:
         print(f"Correcting grammar for text: '{text}'")
         result = grammar_model.generate_text(text, args=grammar_settings)

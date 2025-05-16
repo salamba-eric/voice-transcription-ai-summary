@@ -1,8 +1,11 @@
 import React from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import "../styles/PatientDetails.css"
+import "../styles/Settings.css"
 
 function VisitDetailPage() {
+  const navigate = useNavigate()
+  const patientId = window.location.href.split("/")[6]
 
   // Dummy data for now
   const visitDetails = {
@@ -17,7 +20,10 @@ function VisitDetailPage() {
 
   return (
     <div className="visit-detail-page">
-      <h2>Visit Details</h2>
+      <div>
+        <div className='back-button' onClick = {() => {navigate(`/patient/${patientId}`)}}>{"<<"}</div>
+        <h2>Visit Details</h2>
+      </div>
       <p><strong>Date:</strong> {visitDetails.date}</p>
       <div className="notes-section">
         {visitDetails.notes.map((note, index) => (

@@ -37,7 +37,7 @@ function NewPatientFormPage() {
       department: '',
       file: null,
     });
-    navigate('/patients'); // Redirect to the patient records page
+    navigate('/patients/'); // Redirect to the patient records page
   };
 
   return (
@@ -115,6 +115,8 @@ function NewPatientFormPage() {
 
         <div className="form-buttons">
           <button type="submit" className="save-btn">Save Record</button>
+          <button type="submit" className="save-btn">Capture Image</button>
+          <button type="submit" className="save-btn">Record Audio</button>
           <button type="button" onClick={handleCancel} className="cancel-btn">Cancel</button>
         </div>
 

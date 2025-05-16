@@ -4,6 +4,7 @@ import PatientCard from '../components/PatientCard';
 
 function PatientListPage() {
   const navigate = useNavigate();
+  const staffId = window.location.href.split('/')[4]; // Extract staffId from URL
 
   // Dummy patient list
   const patients = [
@@ -20,7 +21,7 @@ function PatientListPage() {
             <PatientCard key={patient.id} patient={patient} />
         ))}
       </ul>
-      <button onClick={() => navigate('/patients/new')}>Add New Patient</button>
+      <button onClick={() => navigate(`/patients/${staffId}/new`)}>Add New Patient</button>
       <button onClick={() => navigate('/home')}>Back to Dashboard</button>
     </div>
   );

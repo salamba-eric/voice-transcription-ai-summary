@@ -5,5 +5,6 @@ urlpatterns = [
     path('create', PatientCreateView.as_view(), name='patient-create'),
     path('list', PatientListView.as_view(), name='patient-list'),
     path('delete/<int:pk>', PatientDeleteView.as_view(), name='patient-delete'),
+    path('update_patient/<int:pk>', UpdatePatientView.as_view(),),
 
 ]

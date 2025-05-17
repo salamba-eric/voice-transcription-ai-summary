@@ -17,6 +17,8 @@ function PatientListPage() {
     getPatients();
   }, []);
 
+  console.log(patients)
+
   if (!patients) {
     return <div>Loading patients...</div>;
   }

@@ -4,7 +4,7 @@ const backend_url = "/api/patients";
 export const create_patient = async (patientData) => {
     try {
         console.log(patientData)
-        const response = await axios.post(`${backend_url}/create`, patientData);
+        const response = await axios.post(`${backend_url}/create/`, patientData);
         return response.data;
     } catch (error) {
         console.error("Error creating patient:", error);

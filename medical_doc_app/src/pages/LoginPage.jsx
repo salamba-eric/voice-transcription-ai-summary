@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
-import api from '../api';
 import InputField from '../components/InputField';
+import { login } from '../api/authentication';
 
 import "../styles/Login.css";
 
@@ -13,9 +13,8 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      // const response = await api.post('login/', { username, password });
-      
-      // console.log('Logged in:', response.data);
+      const response = await login(username, password);
+      console.log('Logged in:', response.data);
       navigate('/home');
     } catch (error) {
       console.error('Login failed:', error.response?.data || error.message);

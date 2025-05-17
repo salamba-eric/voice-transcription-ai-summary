@@ -1,6 +1,7 @@
 from django.db import models
 from patients.models import Patient
 from employees.models import Employee
+from departments.models import Department
 # from departments.models import Department
 
 class MedicalRecord(models.Model):
@@ -12,9 +13,9 @@ class MedicalRecord(models.Model):
 
     record_id      = models.AutoField(primary_key=True)
     record_type    = models.CharField(max_length=5, choices=RECORD_TYPE_CHOICES)
-    patient        = models.ForeignKey(Patient,   on_delete=models.CASCADE, related_name='medical_records')
+    patient        = models.ForeignKey(Patient,   on_delete=models.CASCADE, null=True, blank=True, related_name='medical_records')
     staff          = models.ForeignKey(Employee,  on_delete=models.PROTECT, related_name='created_records')
-    # department     = models.ForeignKey(Department,on_delete=models.PROTECT, related_name='records')
+    department     = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name="added_department_records")
     diagnosis      = models.TextField()
     treatment_plan = models.TextField()
     medication     = models.TextField(blank=True, null=True)

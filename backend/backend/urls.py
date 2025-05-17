@@ -18,16 +18,19 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/login/', obtain_auth_token, name='api_token_auth'),
+
     path('api/patients/', include('patients.urls')), 
+    path('api/departments/', include('departments.urls')),
+    path('api/employees/', include('employees.urls')),
 
     # path('document_processing/', include('document_processing.urls')),
     # path('patients/', include('patients.urls')),
     # path('audio_processing/', include('audio_processing.urls')),
-    # path('employees/', include('employees.urls')),
-    # path('departments/', include('departments.urls')),
     # path('medical_records/', include('medical_records.urls')),
 ]
 

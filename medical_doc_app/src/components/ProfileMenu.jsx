@@ -9,7 +9,7 @@ function ProfileMenu() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Clear tokens, redirect to login
+    localStorage.removeItem("authToken");
     console.log('Logging out...');
     navigate('/');
   };

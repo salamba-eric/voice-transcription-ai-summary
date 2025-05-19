@@ -132,9 +132,10 @@ def transcribe_audio(audio_path):
         load_whisper()
     try:
         print(f"Transcribing audio: {audio_path}")
-        cleaned_path = clean_audio(audio_path)
+        # cleaned_path = clean_audio(audio_path)
+        cleaned_path = audio_path
         segments, _ = transcription_model.transcribe(cleaned_path)
-        transcription_results = [(s.start, s.end, s.text) for s in segments]
+        transcription_results = [[s.start, s.end, s.text] for s in segments]
         print(f"Audio transcribed successfully.")
         print(transcription_results)
         return transcription_results

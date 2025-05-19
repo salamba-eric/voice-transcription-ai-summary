@@ -95,8 +95,9 @@ def classify_sentence(sentence):
     get_torch()
     if classifier == None:
         load_classifier()
-    
-    class_labels = ["SmallTalk", "Demographics", "Treatment_Plan", "Past_Medical_History", "Active_Symptoms", "Test_Results", "Allergies", "Current_Conditions", "Clinical_Diagnosis", "Family_History"]
+
+        
+    class_labels = ["SmallTalk", "Demographics", "treatmentPlan", "patientHistory", "symptoms", "Test_Results", "allergies", "pre_existingConditions", "diagnosis", "familyHistory"]
     inputs = tokenizer(sentence, return_tensors="pt", truncation=True, padding="max_length", max_length=128)
     outputs = classifier(**inputs)
     logits = outputs.logits
@@ -121,7 +122,6 @@ def extract_entities(sentence):
                 output_dict[label] = set()
             output_dict[label].add(text)
             
-    print(output_dict)
     newOutput = dict()
     for output in output_dict:
         newOutput[output] = list(output_dict[output] )

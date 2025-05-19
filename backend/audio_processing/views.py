@@ -8,6 +8,7 @@ from .processing import transcribe_audio
 
 @csrf_exempt
 def transcribe_view(request):
+    full_text = []
     if request.method == "POST" and request.FILES.get("audio"):
         audio_file = request.FILES["audio"]
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
@@ -17,7 +18,7 @@ def transcribe_view(request):
 
         try:
             transcription = transcribe_audio(temp_audio_path)
-            full_text = " ".join([t[2] for t in transcription])
+            full_text.append([t[2] for t in transcription])
             os.remove(temp_audio_path)
             return JsonResponse({"transcription": full_text})
         except Exception as e:

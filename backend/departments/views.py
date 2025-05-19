@@ -29,6 +29,10 @@ class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
 
+    def get_object(self):
+        department_id = self.kwargs.get('pk')
+        return get_object_or_404(Department, pk=department_id)
+
 class JoinDepartmentView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Department.objects.all() # We'll filter in get_object

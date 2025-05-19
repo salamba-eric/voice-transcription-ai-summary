@@ -18,6 +18,7 @@ class Employee(models.Model):
     ]
 
     user          = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee_profile')
+    patients      = models.ManyToManyField('patients.Patient', blank=True, related_name='assigned_employees')
     role          = models.CharField(max_length=3, choices=ROLE_CHOICES)
     department    = models.ForeignKey('departments.Department', on_delete=models.SET_NULL, null=True, blank=True, related_name="new_member")
     contact_info  = models.CharField(max_length=100)

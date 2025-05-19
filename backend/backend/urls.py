@@ -27,11 +27,11 @@ urlpatterns = [
     path('api/patients/', include('patients.urls')), 
     path('api/departments/', include('departments.urls')),
     path('api/employees/', include('employees.urls')),
+    path('api/records/', include('medical_records.urls')),
 
     # path('document_processing/', include('document_processing.urls')),
     # path('patients/', include('patients.urls')),
     # path('audio_processing/', include('audio_processing.urls')),
-    # path('medical_records/', include('medical_records.urls')),
 ]
 
 

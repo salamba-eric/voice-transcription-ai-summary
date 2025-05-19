@@ -7,4 +7,7 @@ urlpatterns = [
     path('delete/<int:id>/', EmployeeDeleteView.as_view(), name='employee-delete'),
     path('find/<int:id>/', EmployeeSearchView.as_view(), name='employee-find'),
     path('me/', MeView.as_view(), name='employee-me'),
+    path('<int:employee_id>/add-patient/<int:patient_id>/', AddPatientToEmployeeView.as_view(), name='add-patient-to-employee'),
+    path('<int:employee_id>/my-patients/', EmployeePatientListView.as_view(), name='employee-patients-list'),
+    path('<int:employee_id>/my-departments/', EmployeeDepartmentsViewList.as_view(), name='employee-department-list'),
 ]

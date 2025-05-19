@@ -36,3 +36,8 @@ class PatientSearchView(generics.RetrieveAPIView):
 class PatientDeleteView(generics.DestroyAPIView):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
+
+class UpdatePatientView(generics.RetrieveUpdateAPIView):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+    lookup_field = 'pk'

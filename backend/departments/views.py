@@ -17,7 +17,8 @@ class DepartmentCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         try:
             employee = Employee.objects.get(user=self.request.user)
-            serializer.save(creator=employee)
+            department = serializer.save(creator=employee)
+            department.employees.add(employee)
         except Employee.DoesNotExist:
             raise ValidationError("You must be logged in as an employee to create a department.")
 

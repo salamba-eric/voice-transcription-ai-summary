@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import tempfile
 import os
-from .processing import transcribe_audio, correct_grammar
+from .processing import transcribe_audio
 
 @csrf_exempt
 def transcribe_view(request):
@@ -18,9 +18,8 @@ def transcribe_view(request):
         try:
             transcription = transcribe_audio(temp_audio_path)
             full_text = " ".join([t[2] for t in transcription])
-            corrected = correct_grammar(full_text)
             os.remove(temp_audio_path)
-            return JsonResponse({"transcription": corrected})
+            return JsonResponse({"transcription": full_text})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
 

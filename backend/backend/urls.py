@@ -19,10 +19,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
+from .views import RegisterView, UserListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/login/', obtain_auth_token, name='api_token_auth'),
+    path('api/register/', RegisterView.as_view(), name='register'),
+    path('api/users/list/', UserListView.as_view(), name='list-users'),
 
     path('api/patients/', include('patients.urls')), 
     path('api/departments/', include('departments.urls')),
@@ -30,6 +33,7 @@ urlpatterns = [
     path('api/records/', include('medical_records.urls')),
     path('api/image-processing/', include('document_processing.urls')),
     path('api/audio-processing/', include('audio_processing.urls')),
+    path('api/text-processing/', include('text_processing.urls')),
 
 ]
 

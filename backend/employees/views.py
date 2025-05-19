@@ -4,7 +4,6 @@ from .models import Employee
 from .serializers import EmployeeSerializer
 from patients.models import Patient
 from patients.serializers import PatientSerializer
-from departments.models import Department
 from departments.serializers import DepartmentSerializer
 from .serializers import *
 from rest_framework import status
@@ -12,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
+from django.utils import timezone
 
 
 
@@ -116,3 +116,44 @@ class MeView(APIView):
 
         serializer = EmployeeSerializer(employee)
         return Response(serializer.data)
+    
+class AuthorizeUserAsEmployeeView(APIView):
+    """
+    Authorizes an existing user as an employee by creating an Employee instance
+    linked to their User account, taking user ID as a path parameter.
+    """
+    def post(self, request, user_id):
+        """
+        Creates an Employee instance for the user with the given user ID.
+
+        Args:
+            request (Request): The request object.
+            user_id (int): The ID of the User to authorize as an employee.
+
+        Returns:
+            Response: A Response indicating success or failure.
+        """
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise NotFound(f"User with ID '{user_id}' not found.")
+
+        try:
+            # Check if an employee already exists for this user
+            existing_employee = Employee.objects.get(user=user)
+            serializer = EmployeeSerializer(existing_employee)
+            return Response({"message": f"Employee profile already exists for user with ID '{user_id}'.",
+                             "employee": serializer.data}, status=status.HTTP_200_OK)
+        except Employee.DoesNotExist:
+            # Create a new employee instance
+            employee = Employee.objects.create(
+                user=user,
+                created_at=timezone.now()
+                # Add other default fields if necessary
+            )
+            serializer = EmployeeSerializer(employee)
+            return Response({"message": f"Employee profile created for user with ID '{user_id}'.",
+                             "employee": serializer.data}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": f"An unexpected error occurred: {e}"},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)

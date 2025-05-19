@@ -57,10 +57,11 @@
     cursor: pointer;
     box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
     transition: background 0.3s;
+    width: 20vw;
   }
   
   .record-btn {
-    background-color: #00c896;
+    background-color: #4ae26b;
     color: white;
   }
   
@@ -150,6 +151,7 @@ img[alt^="Captured"]:hover {
   gap: 1rem;
   margin-top: 1.5rem;
   justify-content: flex-end;
+  width: 20px;
 }
 
 button {

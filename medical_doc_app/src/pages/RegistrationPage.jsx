@@ -5,6 +5,7 @@ import InputField from '../components/InputField';
 import Button from '../components/Button';
 
 import "../styles/Login.css";
+import { register } from '../api/authentication';
 
 function RegistrationPage() {
   const navigate = useNavigate();
@@ -14,9 +15,9 @@ function RegistrationPage() {
 
   const handleRegister = async () => {
     try {
-      const response = await api.post('register/', { name, password, department });
+      const response = await register(name, password)
       console.log('Registered:', response.data);
-      navigate('/login');
+      navigate('/home');
     } catch (error) {
       console.error('Registration failed:', error.response?.data || error.message);
     }

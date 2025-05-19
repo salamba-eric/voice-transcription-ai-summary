@@ -85,3 +85,18 @@ export const get_patients = async () => {
         throw error;
     }
 }
+
+export const update_patient = async (patientId, data) => {
+    try{
+        const response = await axios.patch(`${backend_url}/update/${patientId}`, data, {
+            headers: {
+                'Authorization': `Token ${token}`
+            }
+        })
+        return response
+    } catch (error){
+        console.error("Error fetching patients:", error.response.request.responseText);
+        throw error;
+    }
+
+}

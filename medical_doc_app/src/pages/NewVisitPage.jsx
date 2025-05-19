@@ -69,7 +69,7 @@ function NewVisitPage() {
       type: 'audio/webm',
     });
     const formData = new FormData();
-    formData.append('audio_chunk', audioFile);
+    formData.append('audio', audioFile);
 
     try {
       const response = await upload_audio(formData)

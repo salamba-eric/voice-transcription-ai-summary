@@ -37,22 +37,6 @@ class PatientDeleteView(generics.DestroyAPIView):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
 
-
-# create patient using createAPIview
-class CreatePatientView(generics.CreateAPIView):
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
-#delete
-class DeletePatientView(generics.RetrieveDestroyAPIView):
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
-    lookup_field = 'pk'
-# use viewsets
-class PatientViewSet(viewsets.ModelViewSet):
-    queryset = Patient.objects.all()
-    serializer_class = PatientSerializer
-
-# update patient record 
 class UpdatePatientView(generics.RetrieveUpdateAPIView):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer

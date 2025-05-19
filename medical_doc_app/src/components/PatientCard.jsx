@@ -7,8 +7,8 @@ function PatientCard({ patient }) {
 
   return (
     <li className='patient-card'>
-      <button style = {{marginTop: '0px'}} onClick={() => navigate(`/patients/${staffId}/patient/${patient.id}`)}>{patient.name}</button>
-      <button style = {{marginTop: '0px'}} onClick={() => navigate(`/patients/${staffId}/edit-patient/${patient.id}`)}>Edit</button>
+      <button style = {{marginTop: '0px'}} onClick={() => navigate(`/patients/${staffId}/patient/${patient.pk}`)}>{patient.name}</button>
+      <button style = {{marginTop: '0px'}} onClick={() => navigate(`/patients/${staffId}/edit-patient/${patient.pk}`)}>Edit</button>
     </li>
   );
 }

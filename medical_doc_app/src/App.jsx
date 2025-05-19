@@ -20,13 +20,13 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/departments" element={<DepartmentPage />} />
         <Route path="/patients/:staffId" element={<PatientRecordsPage />} />
-        <Route path="/patients/:staffId/edit-patient/:patientId" element={<EditPatientPage />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/my-departments/:staffId" element={<DepartmentPage />} />
         <Route path="/patients/:staffId/patient/:patientId" element={<PatientHistory />} />
         <Route path="/patients/:staffId/new" element={<NewPatientFormPage />} />
-        <Route path="/patient/:staffId/:patientId/visit/:visitId" element={<VisitDetailPage />} />
-        <Route path="/patient/:staffId/:patientId/new-visit" element={<NewVisitPage />} />
+        <Route path="/patients/:staffId/edit-patient/:patientId" element={<EditPatientPage />} />
+        <Route path="/patients/:staffId/patient/:patientId/new-visit" element={<NewVisitPage />} />
+        <Route path="/patients/:staffId/patient/:patientId/visit/:visitId" element={<VisitDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/data-confirmation" element={<DataConfirmationPage />} />
       </Routes>

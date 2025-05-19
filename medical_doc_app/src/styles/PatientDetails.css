@@ -80,3 +80,60 @@ button:hover {
   cursor: pointer;
   transition: background 0.3s ease;
 }
+
+.detail-value {
+    font-weight: normal;
+    color: #555;
+}
+
+.visit-detail-page {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 20px;
+    font-family: sans-serif;
+}
+
+h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.detail-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.aqua-container {
+    background-color: #e0ffff; /* Aqua color */
+}
+
+strong {
+    font-weight: bold;
+    display: block; /* Make the strong act as a header */
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.detail-body {
+    display: block; /* Make each span appear on a new line */
+    color: #555;
+    margin-left: 10px;
+}
+
+.notes-section {
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    background-color: #f9f9f9;
+}
+
+.note {
+    margin-bottom: 5px;
+}
+
+.note-item {
+    color: #777;
+}

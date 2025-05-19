@@ -97,3 +97,19 @@
     flex-direction: column;
     justify-content: center;
   }
+
+  .department-card {
+    background: #8ce78c;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    display: flex;
+    padding-left: 10px;
+    justify-content: space-between;
+    width: 80%;
+    text-align: center;
+  }
+
+  .department-card:hover{
+    background: #67c067;
+  }

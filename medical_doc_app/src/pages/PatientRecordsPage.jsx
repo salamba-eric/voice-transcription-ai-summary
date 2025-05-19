@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import PatientCard from '../components/PatientCard';
-import { get_patients } from '../api/patients';
+import { get_my_patients } from '../api/staff_data';
 
 function PatientListPage() {
   const navigate = useNavigate();
@@ -10,29 +10,27 @@ function PatientListPage() {
 
   useEffect(() => {
     const getPatients = async() => {
-      const data = await get_patients();
+      const data = await get_my_patients();
       setPatients(data);
     };
 
     getPatients();
   }, []);
-
-  console.log(patients)
-
   if (!patients) {
     return <div>Loading patients...</div>;
-  }
-  if (patients.length === 0) {
-    return <div>No patients found.</div>;
   }
   return (
     <div className="patients-container">
       <h2>Patient Records</h2>
-      <ul>
+      {patients.length === 0 ? (
+        <div style={{borderWidth: ''}}>Sorry, No patients found. Try adding a patient or have a collegue share one's record with you</div>
+      ) : (
+        <ul>
         {patients.map((patient) => (
             <PatientCard key={patient.pk} patient={patient} />
         ))}
       </ul>
+      )}
       <button onClick={() => navigate(`/patients/${staffId}/new`)}>Add New Patient</button>
       <button onClick={() => navigate('/home')}>Back to Dashboard</button>
     </div>

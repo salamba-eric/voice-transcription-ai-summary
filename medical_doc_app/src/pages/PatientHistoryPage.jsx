@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import { get_patient_records } from '../api/records';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import '../styles/PatientDetails.css';
@@ -6,26 +7,40 @@ import '../styles/PatientDetails.css';
 function PatientHistoryPage() {
   const { patientId } = useParams();
   const navigate = useNavigate()
+  const [visits, setVisits] = React.useState([]);
 
-  // Dummy data for now
-  const visits = [
-    { id: 1, date: '2025-04-01', summary: 'Routine Checkup' },
-    { id: 2, date: '2025-03-20', summary: 'Bloodwork Follow-up' },
-    { id: 3, date: '2025-02-10', summary: 'Allergy Testing' }
-  ];
+  useEffect(() => {
+    const fetchVisits = async () => {
+      try {
+        const response = await get_patient_records(patientId);
+        console.log(response);
+        setVisits(response);
+      }  catch (error) {
+        console.error("Error fetching patient records:", error);
+      }
+    }
+    fetchVisits();
+  }
+  , [patientId]);
+
 
   return (
     <div className="patient-history-page">
-      <h2>Patient Visit History</h2>
+      <div style={{justifyContent: 'center', display: 'flex', alignItems: 'center'}}>
+        <div className='back-button' onClick={() => {navigate(`/patients/${localStorage.getItem('staff_id')}`)}}> ◀ </div>
+        <h2>Patient Visit History</h2>
+      </div>
       {visits.map((visit) => (
         <Link 
-          key={visit.id} 
-          to={`/patient/${patientId}/visit/${visit.id}`}
+          key={visit.record_id} 
+          to={`/patients/${localStorage.getItem('staff_id')}/patient/${patientId}/visit/${visit.record_id}`}
           className="visit-card"
         >
           <div>
-            <h3>{visit.date}</h3>
-            <p>{visit.summary}</p>
+            <h3>{visit.summary || "No Available summary"}</h3>
+            {!visit.summary && 
+              <p>Record ID: {visit.record_id}</p>}
+            <p>Creator: {visit.staff} --- Date: {visit.created_at}</p>
           </div>
         </Link>
       ))}

@@ -1,9 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/NewVisit.css';
+import { create_record } from '../api/records';
 
 function NewVisitPage() {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [returnMessage, setReturnMessage] = useState('');
+  
+  const staffId = localStorage.getItem("staff_id")
+  const patientId = window.location.href.split("/")[6]
+  
   const [formData, setFormData] = useState({
     symptoms: '',
     patientHistory: '',
@@ -11,7 +18,6 @@ function NewVisitPage() {
     medications: '',
     diagnosis: '',
   });
-  const patientId = window.location.href.split("/")[4]
 
   const [recording, setRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
@@ -19,7 +25,13 @@ function NewVisitPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const defaults = {
+      patient: patientId,
+      staff: staffId,
+      record_type: 'TEXT',
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, ...defaults }));
   };
 
   const startRecording = async () => {
@@ -68,10 +80,29 @@ function NewVisitPage() {
     track.stop(); // Stop camera after capture
   };
 
+  const handleSave = async () => {
+    setLoading(true);
+    const response = await create_record(formData);
+    if (response !== undefined) setReturnMessage("Record saved successfully");
+  }
+
   return (
     <div className="new-visit-container">
       <h2>New Visit Record</h2>
-
+      {loading && 
+      <div className='modal-overlay'>
+        <div className='modal-content'>
+          {returnMessage === "" ?  (
+            <p>Saving...</p>
+          ):(
+            <div className='modal-content' style={{justifyContent: 'center', alignItems: 'center'}}>
+              <p>{returnMessage}</p>
+              <button onClick={() => {navigate(`/patients/${staffId}/patient/${patientId}`)}}>Back to Patient Records</button>
+            </div>
+          )}
+        </div>
+      </div>
+      }
       <div className="form-scrollable">
         {Object.keys(formData).map((field) => (
           <div key={field} className="input-box">
@@ -80,14 +111,14 @@ function NewVisitPage() {
               name={field}
               value={formData[field]}
               onChange={handleChange}
-              rows={4}
+              rows={3}
             />
           </div>
         ))}
       </div>
 
       <div className="floating-controls">
-        <button onClick={() => {navigate(`/patient/${patientId}`)}}> Discard Record </button>
+        <button onClick={() => {navigate(`/patients/${staffId}/patient/${patientId}`)}}> Discard Record </button>
         <button 
           className={`record-btn ${recording ? 'recording' : ''}`} 
           onClick={recording ? stopRecording : startRecording}
@@ -99,7 +130,7 @@ function NewVisitPage() {
           Capture Image
         </button>
 
-        <button> Save Record</button>
+        <button onClick={handleSave}> Save Record</button>
       </div>
     </div>
   );

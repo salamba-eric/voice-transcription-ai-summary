@@ -113,4 +113,22 @@ a:hover {
   align-items: center;
 }
 
+.back-button {
+  background: rgb(250, 136, 136);
+  padding: 5px;
+  color: #ffffff;
+  border-radius: 6px;
+  align-items: center;
+  padding-right: 10px;
+  position: relative;
+  right: 18vw;
+}
+
+.back-button:hover {
+  background: rgb(211, 107, 107);
+  font-size: 1.3rem;
+  color: rgb(58, 58, 58);
+  transition: all 0.3s ease;
+}
+
 

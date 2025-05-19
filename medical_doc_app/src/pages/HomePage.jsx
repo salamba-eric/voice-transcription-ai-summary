@@ -47,8 +47,10 @@ function HomePage() {
 
       <main className="dashboard-content">
         <h2>Welcome to the Medical Records Dashboard</h2>
-        <Button onClick={() => navigate(`/patients/${staffData.id}`)}>View Patient Records</Button>
-        <Button onClick={() => navigate(`/my-departments/${staffData.id}`)}>View My Departments</Button>
+        <div style={{ justifyContent: 'space-between', display: 'flex'}}>
+          <Button onClick={() => navigate(`/patients/${staffData.id}`)}>View Patient Records</Button>
+          <Button onClick={() => navigate(`/my-departments/${staffData.id}`)}>View My Departments</Button>
+        </div>
       </main>
     </div>
   );

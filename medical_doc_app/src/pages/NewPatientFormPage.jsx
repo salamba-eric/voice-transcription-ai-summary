@@ -5,6 +5,8 @@ import { create_patient } from '../api/patients';
 import "../styles/NewPatientForm.css";
 
 function NewPatientFormPage() {
+  const [loading, setLoading] = useState(false);
+  const [completed, setCompleted] = useState("");
   const staffId = window.location.href.split('/')[4];
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -26,8 +28,17 @@ function NewPatientFormPage() {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    await create_patient(formData);
-    console.log('Submitting form:', formData);
+    setLoading(true);    try{
+      await create_patient(formData);
+      setCompleted('patient created successfully')
+      setLoading(false);
+    }
+    catch (error) {
+      console.error("Error creating patient:", error);
+      setCompleted('Error creating patient');
+      setLoading(false);
+    }
+
   };
 
   const handleCancel = () => {
@@ -44,7 +55,19 @@ function NewPatientFormPage() {
 
   return (
     <div className="new-patient-form-container">
+      {loading && 
+        <div className="modal-overlay">
+          <p>Loading...</p>
+        </div>}
       <h2>New Patient Record</h2>
+      {completed && 
+        <div className='modal-overlay'>
+          <div className='modal-content'>
+            <h2>{completed}</h2>
+            <button onClick={() => navigate(`/patients/${staffId}`)}>OK</button>
+          </div>
+        </div>
+    }
       <form className="new-patient-form" onSubmit={handleSubmit}>
         
         <label>

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'departments',
     'medical_records',
     'rest_framework',
+    'rest_framework.authtoken',
     'document_processing',
     'audio_processing',
     'corsheaders',
@@ -51,6 +52,11 @@ INSTALLED_APPS = [
 
 # Configure CORS settings
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -83,10 +89,10 @@ ACCESS_CONTROL_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -141,6 +147,18 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 
 # Internationalization

@@ -2,8 +2,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework import status
+from rest_framework import status, generics
 from .serializers import UploadedImageSerializer
+from .models import UploadedImage
 # from .processing import process_image_ocr  # You'll define this
 import os
 from django.conf import settings
@@ -11,18 +12,28 @@ from django.http import JsonResponse
 import cv2
 from . import utility
 
-class ImageUploadView(APIView):
+#upload image
+class UploadedImageCreateView(generics.CreateAPIView):
+    queryset = UploadedImage.objects.all()
+    serializer_class = UploadedImageSerializer
     parser_classes = [MultiPartParser, FormParser]
 
-    def post(self, request, *args, **kwargs):
-        serializer = UploadedImageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Image uploaded successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
-            # image = serializer.save()
-            # result_json = process_image_ocr(image.image.path)
-            # return Response(result_json)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UploadedImageListView(generics.ListAPIView):
+    queryset = UploadedImage.objects.all()
+    serializer_class = UploadedImageSerializer
+
+# class ImageUploadView(APIView):
+#     parser_classes = [MultiPartParser, FormParser]
+
+#     def post(self, request, *args, **kwargs):
+#         serializer = UploadedImageSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response({"message": "Image uploaded successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
+#             # image = serializer.save()
+#             # result_json = process_image_ocr(image.image.path)
+#             # return Response(result_json)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 #preprocess image

@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status, generics
+from django.views.decorators.csrf import csrf_exempt
 from .serializers import UploadedImageSerializer
 from .models import UploadedImage
 # from .processing import process_image_ocr  # You'll define this
@@ -27,21 +28,8 @@ class UploadedImageListView(generics.ListAPIView):
     queryset = UploadedImage.objects.all()
     serializer_class = UploadedImageSerializer
 
-# class ImageUploadView(APIView):
-#     parser_classes = [MultiPartParser, FormParser]
-
-#     def post(self, request, *args, **kwargs):
-#         serializer = UploadedImageSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response({"message": "Image uploaded successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
-#             # image = serializer.save()
-#             # result_json = process_image_ocr(image.image.path)
-#             # return Response(result_json)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 #preprocess image
+@csrf_exempt
 def preprocess_image(request):
     try:
         # Assume latest uploaded file is to be processed
@@ -87,6 +75,8 @@ def preprocess_image(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+
+@csrf_exempt
 def thresholding(image):
     img_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(
@@ -96,9 +86,10 @@ def thresholding(image):
     return thresh
 
 #handle text extraction
+@csrf_exempt
 def process_image_view(request):
     # Path to input image
-    img_path = os.path.join(settings.MEDIA_ROOT, 'uploads/images/form1.png')
+    img_path = os.path.join(settings.MEDIA_ROOT, 'uploads/images/gpt.jpg')
     if not os.path.exists(img_path):
         return JsonResponse({'error': 'Image not found.'}, status=404)
 
@@ -138,10 +129,10 @@ def process_image_view(request):
             words_list.append([x + x2, y + y2, x + x2 + w2, y + y2 + h2])
 
     # Load YOLOv5
-    model = torch.hub.load(
-        'yolov5', 'custom',
-        path='best.pt', source='local', force_reload=True
-    )
+    print("Loading Yolo")
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    print("Successfully loaded Yolo")
+
     class_names = model.names
 
     # Prepare text output file
@@ -161,9 +152,12 @@ def process_image_view(request):
             if label == 'typed':
                 pil_roi = Image.fromarray(roi).convert('L')
                 cfg = r'--oem 3 --psm 7'
+                print("Tesseract loading")
+                # pytesseract.pytesseract.tesseract_cmd = r"C:\Users\HP\Saved Games\android\python\Lib\site-packages\tesseract"
                 text = pytesseract.image_to_string(
                     pil_roi, lang='eng', config=cfg
                 ).strip()
+                print("THis is nce")
                 line = f"Word #{idx} ({x1},{y1},{x2},{y2}) → {repr(text)}\n"
                 results_data.append({
                     'index': idx,

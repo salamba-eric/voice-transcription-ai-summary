@@ -26,8 +26,6 @@ def get_torch_audio():
         import torchaudio
         _torchaudio = torchaudio
 
-
-
 def load_donoising():
     """Load the denoising model."""
     from denoiser import pretrained
@@ -134,7 +132,7 @@ def transcribe_audio(audio_path):
         print(f"Transcribing audio: {audio_path}")
         # cleaned_path = clean_audio(audio_path)
         cleaned_path = audio_path
-        segments, _ = transcription_model.transcribe(cleaned_path)
+        segments, _ = transcription_model.transcribe(cleaned_path, language = "en")
         transcription_results = [[s.start, s.end, s.text] for s in segments]
         print(f"Audio transcribed successfully.")
         print(transcription_results)

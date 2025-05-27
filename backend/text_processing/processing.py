@@ -55,6 +55,7 @@ def load_classifier():
         raise ClassifierError(f"Failed to load sentence classifier model: \n---------------\n{e}\n----------------")
 
 def load_entity_recognizers():
+    print("Loading entity recognizers...")
     import spacy
     global entity_recognizers
     ner_models = ["en_core_web_sm", "continual_learning_ner_combined"]
@@ -91,42 +92,65 @@ def correct_grammar(text):
     except Exception as e:
         raise GrammarCorrectionError(f"Error during grammar correction: {e}")
     
+def segment_sentence(sentence):
+    global entity_recognizers
+    if entity_recognizers == []:
+        load_entity_recognizers()
+    doc = entity_recognizers[0](sentence)
+    processing_sentences = []
+    for ent in doc.sents:
+        print(f"  {ent.text}")
+        processing_sentences.append(ent.text)
+    if len(processing_sentences) == 0:
+        except_message = "No sentences found in the input text."
+        raise ValueError(f"Error during sentence segmentation: {except_message}")
+    return processing_sentences
+
 def classify_sentence(sentence):
     get_torch()
     if classifier == None:
         load_classifier()
 
-        
-    class_labels = ["SmallTalk", "Demographics", "treatmentPlan", "patientHistory", "symptoms", "Test_Results", "allergies", "pre_existingConditions", "diagnosis", "familyHistory"]
-    inputs = tokenizer(sentence, return_tensors="pt", truncation=True, padding="max_length", max_length=128)
-    outputs = classifier(**inputs)
-    logits = outputs.logits
-    probabilities = _torch.softmax(logits, dim=1).detach().cpu().numpy()[0]
-    predicted_class = int(probabilities.argmax())
-    return class_labels[predicted_class]
+    classify_sentences = []
+    print(sentence)
+    for _ in sentence:
+        print(_)
+        classify_sentences += segment_sentence(_)
+    
+    print(f"Classifying sentences: {classify_sentences}")
+    class_labels = ["SmallTalk", "Demographics", "treatmentPlan", "patientHistory", "symptoms", "testResults", "allergies", "pre_existingConditions", "diagnosis", "familyHistory"]
+    return_classes = []
+    for sent in classify_sentences:
+        inputs = tokenizer(sent, return_tensors="pt", truncation=True, padding="max_length", max_length=128)
+        outputs = classifier(**inputs)
+        logits = outputs.logits
+        probabilities = _torch.softmax(logits, dim=1).detach().cpu().numpy()[0]
+        predicted_class = int(probabilities.argmax())
+        return_classes.append({"class": class_labels[predicted_class], "text": sent})
+    print(return_classes)
+    return return_classes
     
 def extract_entities(sentence):
     """
     Extracts entities from a sentence and returns them as a dictionary
     where keys are entity labels and values are sets of entity texts.
     """
-    output_dict = {}
+    global entity_recognizers
     if len(entity_recognizers) == 0:
         load_entity_recognizers()
-    for model in entity_recognizers:
-        doc = model(sentence)
-        for ent in doc.ents:
-            label = ent.label_
-            text = ent.text.replace("," , "")
-            if label not in output_dict:
-                output_dict[label] = set()
-            output_dict[label].add(text)
-            
-    newOutput = dict()
-    for output in output_dict:
-        newOutput[output] = list(output_dict[output] )
-        
-    return newOutput
+
+    doc = entity_recognizers[0](sentence)
+    med_doc = entity_recognizers[1](sentence)
+    entities = dict()
+
+    for ent in med_doc.ents:
+        print(f" {ent.label_} : {ent.text} ")
+        entities[ent.label_] = ent.text
+    for ent in doc.ents:
+        print(f" {ent.label_} : {ent.text} \n")
+        entities[ent.label_] = ent.text
+    print("The final output >> ", entities, "\n---------------------------------------------")        
+    return entities
 
 if __name__ == "__main__":
     text_to_correct = "Thes is an exmaple sentnce with mistaks."

@@ -108,6 +108,7 @@
     justify-content: space-between;
     width: 80%;
     text-align: center;
+    padding-right: 10px;
   }
 
   .department-card:hover{

@@ -15,10 +15,14 @@
     max-height: calc(100vh - 200px);
     overflow-y: auto;
     padding-right: 10px;
+    background-color: #e8f9fa;
+    border-radius: 10px;
   }
   
   .input-box {
     margin-bottom: 1.5rem;
+    width: 50vw;
+    justify-self: center;
   }
   
   .input-box label {
@@ -90,6 +94,7 @@
   transform: translateY(0);
   transition: transform 0.3s ease;
   position: relative;
+  align-items: center;
 }
 
 .image-modal-content {
@@ -151,7 +156,7 @@ img[alt^="Captured"]:hover {
   gap: 1rem;
   margin-top: 1.5rem;
   justify-content: flex-end;
-  width: 20px;
+  width: 150;
 }
 
 button {
@@ -199,7 +204,7 @@ button:not(.danger-btn):not(.secondary-btn):hover {
 /* Danger Button */
 .danger-btn {
   background: #fc8181;
-  color: #c53030;
+  color: #ffffff;
 }
 
 .danger-btn:hover {

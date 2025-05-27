@@ -1,13 +1,18 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { resolvePath, useNavigate } from 'react-router-dom';
 import '../styles/NewVisit.css';
 import { create_record } from '../api/records';
-import { upload_audio, upload_image } from '../api/input_processing';
+import { classify_text, upload_audio, upload_image } from '../api/input_processing';
 
 function NewVisitPage() {
   const navigate = useNavigate()
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const sourceNodeRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const processorNodeRef = useRef(null);
+  const [recording, setRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [returnMessage, setReturnMessage] = useState('');
   const [imageBlobs, setImageBlobs] = useState([]);
@@ -24,21 +29,15 @@ function NewVisitPage() {
     familyHistory: '',
     medications: '',
     diagnosis: '',
+    treatmentPlan: '',
+    testResults: '',
+    allergies: '',
+    pre_existingConditions: '',
   });
-
-  const [recording, setRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const defaults = {
-      patient: patientId,
-      staff: staffId,
-      record_type: 'TEXT',
-    }
     setFormData(prev => ({ ...prev, [name]: value }));
-    setFormData(prev => ({ ...prev, ...defaults }));
   };
 
   const submitFile = async() =>{
@@ -46,42 +45,139 @@ function NewVisitPage() {
   }
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const sourceNode = audioContext.createMediaStreamSource(stream);
+      const processorNode = audioContext.createScriptProcessor(4096, 1, 1);
 
-    mediaRecorderRef.current.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        sendAudioChunk(e.data);
-      }
-    };
+      processorNode.onaudioprocess = (event) => {
+        const audioData = event.inputBuffer.getChannelData(0);
+        audioChunksRef.current.push(new Float32Array(audioData));
+      };
 
-    mediaRecorderRef.current.start(2000); // sends data every 2s
-    setRecording(true);
+      sourceNode.connect(processorNode);
+      processorNode.connect(audioContext.destination);
+
+      audioContextRef.current = audioContext;
+      sourceNodeRef.current = sourceNode;
+      processorNodeRef.current = processorNode;
+      setRecording(true);
+    } catch (error) {
+      console.error("Error starting recording:", error);
+    }
   };
 
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
+  const stopRecording = async () => {
+    if (audioContextRef.current) {
+      await audioContextRef.current.close();
+      sourceNodeRef.current.disconnect();
+      processorNodeRef.current.disconnect();
+    }
+
     setRecording(false);
+    
+    // Encode and send the WAV file
+    const wavBlob = encodeWAV(audioChunksRef.current);
+    sendFullAudio(wavBlob);
+    audioChunksRef.current = [];
   };
 
-  const sendAudioChunk = async (blob) => {
-    const audioFile = new File([blob], `captured_audio_chunk_${Date.now()}.webm`, {
-      type: 'audio/webm',
+  const encodeWAV = (audioChunks) => {
+    const numChannels = 1;
+    const sampleRate = audioContextRef.current ? audioContextRef.current.sampleRate : 44100;
+    const bitsPerSample = 16;
+    const format = 1; // PCM
+
+    let totalSamples = 0;
+    audioChunks.forEach(chunk => totalSamples += chunk.length);
+    const buffer = new ArrayBuffer(44 + totalSamples * 2);
+    const view = new DataView(buffer);
+
+    // WAV header
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + totalSamples * 2, true);
+    writeString(view, 8, 'WAVE');
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, format, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * numChannels * bitsPerSample / 8, true);
+    view.setUint16(32, numChannels * bitsPerSample / 8, true);
+    view.setUint16(34, bitsPerSample, true);
+    writeString(view, 36, 'data');
+    view.setUint32(40, totalSamples * 2, true);
+
+    // Convert to 16-bit PCM
+    let offset = 44;
+    for (const chunk of audioChunks) {
+      for (let i = 0; i < chunk.length; i++) {
+        const sample = Math.max(-1, Math.min(1, chunk[i]));
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+  };
+
+  const writeString = (view, offset, string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  const sendFullAudio = async (blob) => {
+    const audioFile = new File([blob], `recording_${Date.now()}.wav`, {
+      type: 'audio/wav',
     });
+
     const formData = new FormData();
     formData.append('audio', audioFile);
 
     try {
-      const response = await upload_audio(formData)
-
-      if (!response.ok) {
-        const error = await response.json();
-        console.error("Audio chunk upload failed", error);
-      }
+      const response = await upload_audio(formData);
+      response.data.transcription.forEach((sentence) => {
+          convert_to_text(sentence)
+      })
     } catch (err) {
-      console.error("Network error uploading audio chunk", err);
+      console.error("Error uploading audio:", err);
     }
   };
+
+const convert_to_text = async (text_data) => {
+  const response = await classify_text({ text: text_data });
+
+  if (!response || typeof response !== 'object') {
+    console.warn("No valid response from classify_text.");
+    return;
+  }
+
+  setFormData(prevState => {
+    const updatedFormData = { ...prevState };
+
+    Object.entries(response).forEach(([classKey, entityObj]) => {
+      if (!(classKey in updatedFormData)) {
+        console.warn(`"${classKey}" not in formData. Skipping.`);
+        return;
+      }
+
+      const formattedText = Object.entries(entityObj)
+        .filter(([_, value]) => value && value.trim() !== "")
+        .map(([entityType, value]) => `${entityType}: ${value.trim()}`)
+        .join('\n');
+
+      if (formattedText) {
+        updatedFormData[classKey] = updatedFormData[classKey]
+          ? `${updatedFormData[classKey]}\n${formattedText}`
+          : formattedText;
+      }
+    });
+
+    return updatedFormData;
+  });
+};
 
   const openCamera = async () => {
     try {
@@ -145,7 +241,12 @@ function NewVisitPage() {
 
   const handleSave = async () => {
     setLoading(true);
-    const response = await create_record(formData);
+    const submissionData = {
+      patient: patientId,
+      staff: staffId,
+      record_type: 'TEXT',
+    }
+    const response = await create_record({...formData, ...submissionData});
     if (response !== undefined) setReturnMessage("Record saved successfully");
   }
 
@@ -238,6 +339,7 @@ function NewVisitPage() {
           <button 
             className={`record-btn ${recording ? 'recording' : ''}`} 
             onClick={recording ? stopRecording : startRecording}
+            // onClick={() => {convert_to_text({"text": "You were diagnosed with stage 5 cancer"})}}
           >
             {recording ? 'Stop Recording' : 'Record Audio'}
           </button>

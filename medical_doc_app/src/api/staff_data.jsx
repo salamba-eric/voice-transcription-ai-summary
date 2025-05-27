@@ -55,3 +55,16 @@ export const get_employee_details = async (employee_id) => {
         throw error;
     }
 }
+
+export const list_all_employees = async (employee_id) => {
+   try {
+        const response = await axios.get(`${backend_url}/list/`, {
+            headers: {'Authorization': `Token ${localStorage.getItem("authToken")}`},
+        });
+        console.log("Employees fetched successfully:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching employee details:", error.response.request.responseText);
+        throw error;
+    }
+}

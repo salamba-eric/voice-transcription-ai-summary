@@ -28,8 +28,8 @@ export const get_departments = async () => {
 
 export const join_department = async (department_id, staff_id) => {
     try {
-        const user_id = localStorage.getItem("staff_id");
-        const response = await axios.put(`http://127.0.0.1:8000/api/departments/${department_id}/join/${user_id}/`, { department_id },
+        if (staff_id === null) staff_id = localStorage.getItem("staff_id");
+        const response = await axios.put(`http://127.0.0.1:8000/api/departments/${department_id}/join/${staff_id}/`, { department_id },
             { headers: {'Authorization': `Token ${token}`}, }
         );
         return response.data;

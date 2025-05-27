@@ -32,7 +32,8 @@ function VisitDetailPage() {
     </div>
     {Object.entries(visitDetails).map(([key, value]) => {
         // Define keys that should be treated as comma-separated lists
-        const commaSeparatedKeys = ['symptoms', 'diagnosis', 'treatment_plan', 'family_history', 'medication'];
+        const commaSeparatedKeys = [ "symptoms",  "diagnosis", "treatmentPlan", "familyHistory", "medication", 
+                                     "patientHistory", "alergies", "pre_existingConditions"];
         const isCommaSeparated = commaSeparatedKeys.includes(key);
         let valuesArray = [];
 
@@ -45,7 +46,7 @@ function VisitDetailPage() {
         }
 
         // Define keys to exclude or handle differently
-        const excludedKeys = ['record_id', 'created_at', 'updated_at', 'staff', 'patient', 'departments', 'staff_access'];
+        const excludedKeys = ['record_id', 'created_at', 'updated_at', 'patient', 'departments', 'staff_access'];
         if (excludedKeys.includes(key)) {
             let displayValue = value;
             if (key === 'created_at' || key === 'updated_at') {
